@@ -1,6 +1,7 @@
 from django.db.models import Window, F
 from django.db.models.functions import RowNumber
 from django.shortcuts import render
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Book
@@ -38,3 +39,8 @@ class RankedBooksView(APIView):
         ).values('id', 'title', 'page_count', 'rank')
 
         return Response(books)
+
+
+class BookDetailView(RetrieveAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
