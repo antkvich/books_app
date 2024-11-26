@@ -18,6 +18,6 @@ def debug_task(self):
 app.conf.beat_schedule = {
     'send-email-every-x-minutes': {
         'task': 'books.tasks.send_email_task',
-        'schedule': int(TASK_INTERVAL),
+        'schedule': int(TASK_INTERVAL) * 60,
     },
 }
