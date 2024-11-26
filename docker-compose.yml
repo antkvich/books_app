@@ -11,23 +11,49 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - redis
+
+  celery:
+    build: .
+    container_name: celery_worker
+    command: celery -A library_project worker --loglevel=info
     environment:
-      - DEBUG=True
       - DB_NAME=library_db
       - DB_USER=library_user
       - DB_PASSWORD=library_password
       - DB_HOST=db
       - DB_PORT=5432
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - db
+
+  celery-beat:
+    build: .
+    container_name: celery_beat
+    command: celery -A library_project beat --loglevel=info --pidfile=
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - db
+
+  redis:
+    image: redis:7.0
+    container_name: redis
+    ports:
+      - "6379:6379"
 
   db:
     image: postgres:15
     container_name: postgres_db
-    environment:
-      POSTGRES_DB: library_db
-      POSTGRES_USER: library_user
-      POSTGRES_PASSWORD: library_password
     ports:
       - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: django_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
